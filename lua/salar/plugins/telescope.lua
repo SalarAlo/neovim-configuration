@@ -13,10 +13,10 @@ return {
     telescope.setup({
       defaults = {
         file_ignore_patterns = {
-          "node_modules/.*",
-          "vendor/.*",
-          "build/.*",
-          "%.git/.*",
+          "node_modules",
+          "vendor",
+          "build",
+          "%.git",
         },
 	path_display = { "smart" },
         mappings = {
