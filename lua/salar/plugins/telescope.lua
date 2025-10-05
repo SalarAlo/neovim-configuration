@@ -34,16 +34,7 @@ return {
     -- set keymaps
     local keymap = vim.keymap -- for conciseness
 
-keymap.set("n", "<leader>ff", function()
-  require("telescope.builtin").find_files({
-    attach_mappings = function(_, map)
-      map("i", "<CR>", require("telescope.actions").select_tab)
-      map("n", "<CR>", require("telescope.actions").select_tab)
-      return true
-    end,
-  })
-end, { desc = "Fuzzy find files in cwd (new tab)" })
-    keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Fuzzy find recent files" })
+    keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Fuzzy find recent files" })
     keymap.set("n", "<leader>fw", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
     keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor in cwd" })
   end,

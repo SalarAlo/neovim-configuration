@@ -4,8 +4,9 @@ return {
   version = "*",
   opts = {
     options = {
-      mode = "tabs",
+      mode = "buffers", -- ✅ important: one tab, multiple buffers
       separator_style = "thin",
+      always_show_bufferline = true,
     },
   },
 }
