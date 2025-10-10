@@ -2,9 +2,13 @@ return {
   "nvim-tree/nvim-tree.lua",
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
-    require("nvim-tree").setup({
+    local nvimtree = require("nvim-tree")
+
+    local hide_root_files = false
+
+    nvimtree.setup({
       sync_root_with_cwd = true,
-      respect_buf_cwd = false, -- one cwd, not per buffer
+      respect_buf_cwd = false,
       update_focused_file = {
         enable = true,
         update_root = false,
@@ -28,12 +32,11 @@ return {
         sync = {
           open = false,
           close = false,
-          ignore = {}, -- must be a table, not a boolean
+          ignore = {},
         },
       },
     })
 
-    -- keymaps
     local keymap = vim.keymap
     keymap.set("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
     keymap.set("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" })

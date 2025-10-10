@@ -4,9 +4,15 @@ return {
   version = "*",
   opts = {
     options = {
-      mode = "buffers", -- ✅ important: one tab, multiple buffers
+      mode = "buffers",
       separator_style = "thin",
       always_show_bufferline = true,
     },
   },
+  config = function(_, opts)
+    require("bufferline").setup(opts)
+
+    vim.keymap.set("n", "<leader>h", ":BufferLineMovePrev<CR>", { silent = true, desc = "Move buffer left" })
+    vim.keymap.set("n", "<leader>l", ":BufferLineMoveNext<CR>", { silent = true, desc = "Move buffer right" })
+  end,
 }
