@@ -27,6 +27,8 @@ return {
                 end,
                 cwd = "${workspaceFolder}",
                 stopOnEntry = false,
+        	externalConsole = true,
+		runInTerminal = true,
             }
         }
 
