@@ -55,6 +55,12 @@ return {
 
 				opts.desc = "Restart LSP"
 				keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
+
+				-- Enable inlay hints if supported
+				local client = vim.lsp.get_client_by_id(ev.data.client_id)
+				if client and client.server_capabilities.inlayHintProvider then
+					vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+				end
 			end,
 		})
 
@@ -133,5 +139,29 @@ return {
 				})
 			end,
 		})
+
+		-- ============================
+		-- Rust
+		-- ============================
+		vim.lsp.config("rust_analyzer", {
+			capabilities = capabilities,
+			settings = {
+				["rust-analyzer"] = {
+					inlayHints = {
+						typeHints = { enable = true },
+
+						parameterHints = { enable = false },
+						chainingHints = { enable = false },
+						bindingModeHints = { enable = false },
+						closureReturnTypeHints = { enable = "never" },
+						lifetimeElisionHints = { enable = "never" },
+						reborrowHints = { enable = false },
+						closingBraceHints = { enable = false },
+					},
+				},
+			},
+		})
+
+		vim.lsp.enable("rust_analyzer")
 	end,
 }
