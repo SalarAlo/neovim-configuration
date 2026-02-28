@@ -163,5 +163,17 @@ return {
 		})
 
 		vim.lsp.enable("rust_analyzer")
+
+		-- ============================
+		-- Typst
+		-- ============================
+		vim.lsp.config("tinymist", {
+			cmd = { "tinymist" },
+			filetypes = { "typst" },
+			root_markers = { ".git" },
+			capabilities = capabilities,
+		})
+
+		vim.lsp.enable("tinymist")
 	end,
 }

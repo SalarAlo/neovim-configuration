@@ -18,7 +18,7 @@ return {
 		})
 
 		-- VSCode-aligned palette
-		local bg        = "#1b1b1b"
+		local bg        = "#121212"
 		local panel     = "#232323"
 		local accent    = "#569cd6"
 		local inactive  = "#808080"

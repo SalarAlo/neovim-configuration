@@ -1,11 +1,9 @@
 return {
-	"Mofiqul/vscode.nvim",
-	priority = 1000,
+	"oskarnurm/koda.nvim",
+	lazy = false, -- make sure we load this during startup if it is your main colorscheme
+	priority = 1000, -- make sure to load this before all the other start plugins
 	config = function()
-		vim.o.background = "dark"
-		require("vscode").setup({
-			style = "dark"
-		})
-		require("vscode").load()
-	end
+		-- require("koda").setup({ transparent = true })
+		vim.cmd("colorscheme koda")
+	end,
 }
