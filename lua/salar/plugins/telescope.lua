@@ -15,7 +15,6 @@ return {
 				file_ignore_patterns = {
 					"node_modules",
 					"vendor",
-					"assets",
 					"build",
 					"%.git",
 				},

@@ -11,11 +11,17 @@ return {
 		local cmp_nvim_lsp = require("cmp_nvim_lsp")
 		local keymap = vim.keymap
 
+
 		-- setup keymaps when LSP attaches
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 			callback = function(ev)
 				local opts = { buffer = ev.buf, silent = true }
+
+				local client = vim.lsp.get_client_by_id(ev.data.client_id)
+				if client and client.server_capabilities.semanticTokensProvider then
+					client.server_capabilities.semanticTokensProvider = nil
+				end
 
 				opts.desc = "Show LSP references"
 				keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
@@ -133,13 +139,21 @@ return {
 		-- auto-format on save (C/C++)
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			callback = function(ev)
+				local ft = vim.bo[ev.buf].filetype
+
+
+				-- Typst uses typstyle (not LSP)
+				if ft == "typst" then
+					require("conform").format({ bufnr = ev.buf })
+					return
+				end
+
 				vim.lsp.buf.format({
 					bufnr = ev.buf,
 					async = false,
 				})
 			end,
 		})
-
 		-- ============================
 		-- Rust
 		-- ============================
@@ -176,4 +190,6 @@ return {
 
 		vim.lsp.enable("tinymist")
 	end,
+
+
 }
