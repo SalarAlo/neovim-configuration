@@ -19,3 +19,5 @@ require("lazy").setup({
 		notify = false,
 	},
 })
+
+require("salar.core.theme").setup()

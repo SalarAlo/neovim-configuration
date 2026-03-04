@@ -1,9 +1,15 @@
-return {
-	"oskarnurm/koda.nvim",
-	lazy = false, -- make sure we load this during startup if it is your main colorscheme
-	priority = 10000, -- make sure to load this before all the other start plugins
-	config = function()
-		-- require("koda").setup({ transparent = true })
-		vim.cmd("colorscheme koda")
-	end,
-}
+local colorschemes = require("salar.core.colorschemes")
+
+return vim.tbl_map(function(item)
+	local spec = {
+		item.repo,
+		lazy = true,
+		priority = 1000,
+	}
+
+	if item.name then
+		spec.name = item.name
+	end
+
+	return spec
+end, colorschemes.items)

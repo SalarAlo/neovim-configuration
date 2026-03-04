@@ -64,7 +64,16 @@ return {
 
 				-- Enable inlay hints if supported
 				local client = vim.lsp.get_client_by_id(ev.data.client_id)
-				if client and client.server_capabilities.inlayHintProvider then
+				local ft = vim.bo[ev.buf].filetype
+				local path = vim.api.nvim_buf_get_name(ev.buf)
+				local disable_inlay_hints = vim.tbl_contains({ "c", "cpp", "objc", "objcpp" }, ft)
+					or path:match("%.h$")
+					or path:match("%.hh$")
+					or path:match("%.hpp$")
+					or path:match("%.hxx$")
+					or path:match("%.inl$")
+
+				if client and client.server_capabilities.inlayHintProvider and not disable_inlay_hints then
 					vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 				end
 			end,
