@@ -67,11 +67,11 @@ return {
 				local ft = vim.bo[ev.buf].filetype
 				local path = vim.api.nvim_buf_get_name(ev.buf)
 				local disable_inlay_hints = vim.tbl_contains({ "c", "cpp", "objc", "objcpp" }, ft)
-					or path:match("%.h$")
-					or path:match("%.hh$")
-					or path:match("%.hpp$")
-					or path:match("%.hxx$")
-					or path:match("%.inl$")
+				    or path:match("%.h$")
+				    or path:match("%.hh$")
+				    or path:match("%.hpp$")
+				    or path:match("%.hxx$")
+				    or path:match("%.inl$")
 
 				if client and client.server_capabilities.inlayHintProvider and not disable_inlay_hints then
 					vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
@@ -142,6 +142,23 @@ return {
 		-- ============================
 		vim.lsp.config("lua_ls", {
 			capabilities = capabilities,
+			settings = {
+				Lua = {
+					runtime = {
+						version = "LuaJIT",
+					},
+					diagnostics = {
+						globals = { "vim" },
+					},
+					workspace = {
+						checkThirdParty = false,
+						library = vim.api.nvim_get_runtime_file("", true),
+					},
+					completion = {
+						callSnippet = "Replace",
+					},
+				},
+			},
 		})
 		vim.lsp.enable("lua_ls")
 
