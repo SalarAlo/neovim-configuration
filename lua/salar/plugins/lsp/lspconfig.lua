@@ -215,6 +215,20 @@ return {
 		})
 
 		vim.lsp.enable("tinymist")
+
+		-- ============================
+		-- Haskell
+		-- ============================
+		if vim.fn.executable("haskell-language-server-wrapper") == 1 then
+			vim.lsp.config("hls", {
+				capabilities = capabilities,
+				cmd = { "haskell-language-server-wrapper", "--lsp" },
+				filetypes = { "haskell", "lhaskell", "cabal" },
+				root_markers = { "hie.yaml", "stack.yaml", "cabal.project", "package.yaml", "*.cabal", ".git" },
+			})
+
+			vim.lsp.enable("hls")
+		end
 	end,
 
 

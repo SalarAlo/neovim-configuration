@@ -9,6 +9,10 @@ return {
     -- import nvim-treesitter plugin
     local treesitter = require("nvim-treesitter.configs")
 
+    -- nvim-treesitter ships a Haskell parser, but not separate parsers for
+    -- literate Haskell or Cabal files.
+    vim.treesitter.language.register("haskell", "lhaskell")
+
     -- configure treesitter
     treesitter.setup({ -- enable syntax highlighting
       highlight = {
@@ -42,6 +46,7 @@ return {
         "query",
         "vimdoc",
         "c",
+        "haskell",
       },
       incremental_selection = {
         enable = true,
