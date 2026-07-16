@@ -45,6 +45,7 @@ function M.setup()
 		vim.fn.jobstart({ "zathura", pdf })
 	end, {})
 
+
 	require("salar.tools.cpp_extract").setup()
 end
 

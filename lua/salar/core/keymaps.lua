@@ -35,3 +35,6 @@ vim.keymap.set("n", "<leader>cu", "<cmd>Telescope lsp_references<CR>")
 keymap.set("n", "<leader>ts", "<cmd>Theme<CR>", { desc = "Select theme" })
 keymap.set("n", "<leader>tn", "<cmd>ThemeNext<CR>", { desc = "Next theme" })
 keymap.set("n", "<leader>tp", "<cmd>ThemePrev<CR>", { desc = "Previous theme" })
+
+-- terminal related
+keymap.set("t", "<Esc>", [[<C-\><C-n>]])

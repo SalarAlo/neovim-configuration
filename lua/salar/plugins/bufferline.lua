@@ -61,6 +61,8 @@ return {
 				separator_style = "thin",
 				always_show_bufferline = true,
 				sort_by = "insert_after_current",
+				diagnostics = false,
+				modified_icon = "",
 				show_buffer_close_icons = false,
 				show_close_icon = false,
 			},

@@ -151,7 +151,7 @@ return {
 			},
 			init_options = {
 				fallbackFlags = {
-					"-std=c++20",
+					"-std=c++23",
 				},
 			},
 		})

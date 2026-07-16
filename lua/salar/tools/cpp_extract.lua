@@ -127,6 +127,17 @@ local function find_direct_named_child(node, wanted_type)
 	return nil
 end
 
+local function has_template_ancestor(node)
+	local current = node and node:parent() or nil
+
+	while current do
+		if current:type() == "template_declaration" then return true end
+		current = current:parent()
+	end
+
+	return false
+end
+
 local function get_class_name(class_node, bufnr)
 	local name_node = get_field_child(class_node, "name")
 	if name_node then return trim(get_node_text(name_node, bufnr)) end
@@ -287,7 +298,9 @@ local function collect_inline_member_functions(class_node)
 			if kind == "class_specifier" or kind == "struct_specifier" then
 				-- Ignore nested types while processing the current class.
 			elseif kind == "function_definition" then
-				table.insert(functions, child)
+				if not has_template_ancestor(child) then
+					table.insert(functions, child)
+				end
 			else
 				walk(child)
 			end
@@ -531,7 +544,7 @@ local function extract_class_functions(functions, class_node, bufnr, path)
 	end
 
 	if vim.tbl_isempty(functions) then
-		notify("No inline member definitions found in the current class", vim.log.levels.INFO)
+		notify("No non-template inline member definitions found in the current class", vim.log.levels.INFO)
 		return
 	end
 
@@ -657,6 +670,11 @@ function M.extract_current_function()
 	local function_node = find_enclosing_function(root, row, col)
 	if not function_node then
 		notify("Place the cursor inside the function definition to extract", vim.log.levels.ERROR)
+		return
+	end
+
+	if has_template_ancestor(function_node) then
+		notify("Template function definitions should stay in the header", vim.log.levels.WARN)
 		return
 	end
 

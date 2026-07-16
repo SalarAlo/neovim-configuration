@@ -2,7 +2,7 @@ return {
 	"obsidian-nvim/obsidian.nvim",
 	version = "*",
 	lazy = true,
-	ft = "markdown",
+	event = { "BufReadPre *.md", "BufNewFile *.md" },
 	cmd = {
 		"ObsidianBacklinks",
 		"ObsidianDailies",
@@ -48,6 +48,10 @@ return {
 			group = group,
 			pattern = "markdown",
 			callback = function(args)
+				if vim.bo[args.buf].buftype ~= "" then
+					return
+				end
+
 				require("salar.core.obsidian").setup_markdown_buffer(args.buf)
 			end,
 		})

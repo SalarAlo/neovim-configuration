@@ -9,6 +9,10 @@ return {
 				theme = "auto",
 			},
 			sections = {
+				lualine_b = {
+					{ "branch" },
+					{ "diagnostics" },
+				},
 				lualine_x = {
 					{
 						lazy_status.updates,

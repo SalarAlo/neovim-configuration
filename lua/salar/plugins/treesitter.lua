@@ -16,6 +16,47 @@ return {
     -- literate Haskell or Cabal files.
     vim.treesitter.language.register("haskell", "lhaskell")
 
+    -- Neovim core calls `vim.treesitter.start()` directly on the LSP hover
+    -- popup (markdown filetype), bypassing nvim-treesitter's own
+    -- enable/disable config above. nvim-treesitter's markdown injection
+    -- query then crashes in `set-lang-from-info-string!`: it assumes
+    -- `match[capture_id]` is a bare TSNode (via a now-defunct `all=false`
+    -- compat opt), but this Neovim's query engine always hands directives
+    -- `table<integer, TSNode[]>` (a list per capture, per core's own
+    -- `offset!` handler). Re-register a version that unwraps the list
+    -- instead of calling `:range()` on it, so a fenced code block in
+    -- hover docs can't take down the UI.
+    do
+      local non_filetype_match_injection_language_aliases = {
+        ex = "elixir",
+        pl = "perl",
+        sh = "bash",
+        uxn = "uxntal",
+        ts = "typescript",
+      }
+
+      require("nvim-treesitter.query_predicates")
+
+      vim.treesitter.query.add_directive("set-lang-from-info-string!", function(match, _, bufnr, pred, metadata)
+        local captured = match[pred[2]]
+        local node = type(captured) == "table" and captured[#captured] or captured
+        if type(node) ~= "userdata" then
+          return
+        end
+
+        local ok, text = pcall(vim.treesitter.get_node_text, node, bufnr)
+        if not ok then
+          return
+        end
+
+        local injection_alias = text:lower()
+        local filetype = vim.filetype.match({ filename = "a." .. injection_alias })
+        metadata["injection.language"] = filetype
+          or non_filetype_match_injection_language_aliases[injection_alias]
+          or injection_alias
+      end, { force = true })
+    end
+
     -- configure treesitter
     treesitter.setup({ -- enable syntax highlighting
       highlight = {
