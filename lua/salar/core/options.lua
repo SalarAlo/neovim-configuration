@@ -52,6 +52,8 @@ vim.filetype.add({
 		gdshaderinc = "gdshaderinc",
 		tres = "gdresource",
 		tscn = "gdresource",
+		h = "c",
+		hpp = "cpp",
 	},
 	filename = {
 		["project.godot"] = "godot",
