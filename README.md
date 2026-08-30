@@ -51,6 +51,7 @@ Leader is `<Space>`.
 | --- | --- |
 | `<leader>ff` | Find files |
 | `<leader>fw` | Live grep |
+| `<leader>fs` | Document symbols |
 | `<leader>fc` | Search word under cursor |
 | `<C-n>` | Toggle file tree |
 | `<leader>e` | Focus file tree |

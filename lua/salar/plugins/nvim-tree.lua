@@ -37,6 +37,8 @@ return {
       },
     })
 
+    require("salar.tools.include_rename").setup(require("nvim-tree.api"))
+
     local keymap = vim.keymap
     keymap.set("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
     keymap.set("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" })

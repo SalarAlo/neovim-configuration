@@ -1,4 +1,3 @@
--- lua/salar/tools/init.lua
 local M = {}
 
 function M.setup()
@@ -47,6 +46,7 @@ function M.setup()
 
 
 	require("salar.tools.cpp_extract").setup()
+	require("salar.tools.cpp_trivial_constructor").setup()
 end
 
 return M

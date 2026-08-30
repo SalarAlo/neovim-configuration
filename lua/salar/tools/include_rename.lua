@@ -64,10 +64,11 @@ local function compute_replacements(old_abs, new_abs)
 		}
 	end
 
-	-- Basename-only replacement can be ambiguous, so only allow it if unique.
+	-- Basename-only replacement can be ambiguous. This runs after the rename,
+	-- so the old basename is usually gone; allow zero or one remaining match.
 	local old_base = old_parts[#old_parts]
 	local new_base = new_parts[#new_parts]
-	if old_base ~= new_base and file_count_by_name(root, old_base) == 1 then
+	if old_base ~= new_base and file_count_by_name(root, old_base) <= 1 then
 		replacements[#replacements + 1] = {
 			old = old_base,
 			new = new_base,
@@ -103,6 +104,35 @@ local function rewrite_include_line(line, replacements)
 	return line, false
 end
 
+local function loaded_buf_for_file(path)
+	local target = normalize(vim.fn.fnamemodify(path, ":p"))
+
+	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_loaded(bufnr) then
+			local name = vim.api.nvim_buf_get_name(bufnr)
+			if name ~= "" and normalize(vim.fn.fnamemodify(name, ":p")) == target then
+				return bufnr
+			end
+		end
+	end
+
+	return nil
+end
+
+local function rewrite_lines(lines, replacements)
+	local changed = false
+
+	for i, line in ipairs(lines) do
+		local rewritten, line_changed = rewrite_include_line(line, replacements)
+		if line_changed then
+			lines[i] = rewritten
+			changed = true
+		end
+	end
+
+	return changed
+end
+
 local function rewrite_includes_in_project(old_abs, new_abs)
 	local replacements, root = compute_replacements(old_abs, new_abs)
 	if #replacements == 0 then
@@ -115,23 +145,31 @@ local function rewrite_includes_in_project(old_abs, new_abs)
 	end, {
 		path = root,
 		type = "file",
+		limit = math.huge,
 	})
 
 	for _, file in ipairs(files) do
 		if is_cpp_path(file) then
-			local lines = vim.fn.readfile(file)
-			local changed = false
-			for i, line in ipairs(lines) do
-				local rewritten, line_changed = rewrite_include_line(line, replacements)
-				if line_changed then
-					lines[i] = rewritten
-					changed = true
-				end
-			end
+			local bufnr = loaded_buf_for_file(file)
+			local lines = bufnr and vim.api.nvim_buf_get_lines(bufnr, 0, -1, false) or vim.fn.readfile(file)
 
-			if changed then
-				vim.fn.writefile(lines, file)
-				changed_files = changed_files + 1
+			if rewrite_lines(lines, replacements) then
+				if bufnr then
+					if not vim.bo[bufnr].modifiable then
+						vim.notify("Skipped unmodifiable buffer: " .. file, vim.log.levels.WARN)
+					else
+						vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+						vim.api.nvim_buf_call(bufnr, function()
+							if not vim.bo.readonly then
+								vim.cmd("silent write")
+							end
+						end)
+						changed_files = changed_files + 1
+					end
+				else
+					vim.fn.writefile(lines, file)
+					changed_files = changed_files + 1
+				end
 			end
 		end
 	end
