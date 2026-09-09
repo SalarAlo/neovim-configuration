@@ -153,6 +153,77 @@ return {
 		vim.lsp.enable("clangd")
 
 		-- ============================
+		-- Python
+		-- ============================
+		local function get_python_path(root_dir)
+			local venv_names = { ".venv", "venv", "env" }
+
+			for _, venv_name in ipairs(venv_names) do
+				local unix_python = root_dir .. "/" .. venv_name .. "/bin/python"
+				local windows_python = root_dir .. "/" .. venv_name .. "/Scripts/python.exe"
+
+				if vim.fn.executable(unix_python) == 1 then
+					return unix_python, venv_name
+				end
+
+				if vim.fn.executable(windows_python) == 1 then
+					return windows_python, venv_name
+				end
+			end
+
+			if vim.env.VIRTUAL_ENV then
+				local virtualenv_python = vim.env.VIRTUAL_ENV .. "/bin/python"
+				if vim.fn.executable(virtualenv_python) == 1 then
+					return virtualenv_python
+				end
+			end
+
+			local python3 = vim.fn.exepath("python3")
+			if python3 ~= "" then
+				return python3
+			end
+
+			local python = vim.fn.exepath("python")
+			if python ~= "" then
+				return python
+			end
+		end
+
+		vim.lsp.config("pyright", {
+			capabilities = capabilities,
+			filetypes = { "python" },
+			root_markers = {
+				"pyrightconfig.json",
+				"pyproject.toml",
+				"setup.py",
+				"setup.cfg",
+				"requirements.txt",
+				"Pipfile",
+				".git",
+			},
+			before_init = function(_, config)
+				local root_dir = config.root_dir or vim.fn.getcwd()
+				local python_path, venv_name = get_python_path(root_dir)
+
+				config.settings = config.settings or {}
+				config.settings.python = config.settings.python or {}
+				config.settings.python.analysis = config.settings.python.analysis or {}
+				config.settings.python.analysis.autoSearchPaths = true
+				config.settings.python.analysis.useLibraryCodeForTypes = true
+
+				if python_path then
+					config.settings.python.pythonPath = python_path
+				end
+
+				if venv_name then
+					config.settings.python.venvPath = root_dir
+					config.settings.python.venv = venv_name
+				end
+			end,
+		})
+		vim.lsp.enable("pyright")
+
+		-- ============================
 		-- Lua
 		-- ============================
 		vim.lsp.config("lua_ls", {
